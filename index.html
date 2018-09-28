@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+
+    <script>
+        $(document).ready(function ($) {
+            var summLength = 0;
+            // собирам общее кол-во символов
+            $('.js-sum-length').on('keyup', function (el) {
+                countSum(el);
+            });
+
+            function countSum(el) {
+                var elValue = $(el.target).val().replace(/[^\S/+-]/gi,'');
+                summLength = elValue.length;
+
+                $(el.target).next().val(summLength);
+
+                var jsSum = $('.js-length');
+                var totalSum = 0;
+
+                for (i=0; i < jsSum.length; i++) {
+                    var value = parseInt(jsSum[i].value, 10);
+                    if (isNaN(value)) {
+                        continue;
+                    }
+                    totalSum += value;
+                }
+
+                $('#js-length-total').html(totalSum);
+            }
+        });
+    </script>
+</head>
+
+<body>
+<div class="language-tab">
+    <input type="text" class="js-sum-length">
+    <input type="hidden" name="length" class="js-length">
+
+    <input type="text" class="js-sum-length">
+    <input type="hidden" name="length" class="js-length">
+
+    <textarea class="js-sum-length"></textarea>
+    <input type="hidden" name="length" class="js-length">
+
+    <textarea class="js-sum-length"></textarea>
+    <input type="hidden" name="length" class="js-length">
+</div>
+<div id="js-length-total"></div>
+</body>
+
+</html>
