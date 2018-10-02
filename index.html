@@ -2,53 +2,128 @@
 <html>
 <head>
     <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function ($) {
-            var summLength = 0;
-            // собирам общее кол-во символов
-            $('.js-sum-length').on('keyup', function (el) {
-                countSum(el);
+            var languageContainers = $('.js-language-char-sum');
+            containersCountChars();
+
+            languageContainers.on('keyup', function (el) {
+                containersCountChars();
+                var containerLanguage = $('.js-language-result-container');
+                containerLanguage.after().first().remove();
             });
 
-            function countSum(el) {
-                var elValue = $(el.target).val().replace(/[^\S/+-]/gi,'');
-                summLength = elValue.length;
+            // функция для пересчета кол-ва символов в полях
+            function containersCountChars() {
+                var containerLanguage = document.createElement('div');
+                $(containerLanguage).addClass('js-language-result-container');
+                var resultContainer = $('.js-result-language');
 
-                $(el.target).next().val(summLength);
+                Array.from(languageContainers).forEach(function (container) {
 
-                var jsSum = $('.js-length');
-                var totalSum = 0;
+                    var totalLength = 0;
+                    var patterns = [
+                        /[^\S/+-]/gi,
+                        /&nbsp;/g,
+                        /"/g,
+                        /(<([^>]+)>)/ig,
+                    ];
+                    var fields = $(container).find('.js-sum-length');
 
-                for (i=0; i < jsSum.length; i++) {
-                    var value = parseInt(jsSum[i].value, 10);
-                    if (isNaN(value)) {
-                        continue;
+                    Array.from(fields).forEach(function (field) {
+                        var fieldValue = $(field).val();
+                        patterns.forEach(function (pattern) {
+                            fieldValue = fieldValue.replace(pattern, '');
+                        });
+                        totalLength += fieldValue.length;
+                    });
+
+                    if (totalLength > 0) {
+                        $(container).find('#js-length-container-sum').html(totalLength);
                     }
-                    totalSum += value;
-                }
 
-                $('#js-length-total').html(totalSum);
+                    var languageName = $(container).find('.js-language-name').text();
+                    if (languageName === "#LANGUAGE#") {
+                        return;
+                    }
+                    var languageResults = $(containerLanguage).append(' ' + languageName + ': ' + totalLength);
+                    resultContainer.append(languageResults);
+                    resultContainer.text()
+                });
             }
         });
     </script>
 </head>
 
 <body>
-<div class="language-tab">
-    <input type="text" class="js-sum-length">
-    <input type="hidden" name="length" class="js-length">
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">Русский</a></li>
+        <li><a data-toggle="tab" href="#menu1">Английский</a></li>
+        <li><a data-toggle="tab" href="#menu2">Немецкий</a></li>
+    </ul>
 
-    <input type="text" class="js-sum-length">
-    <input type="hidden" name="length" class="js-length">
-
-    <textarea class="js-sum-length"></textarea>
-    <input type="hidden" name="length" class="js-length">
-
-    <textarea class="js-sum-length"></textarea>
-    <input type="hidden" name="length" class="js-length">
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade in active js-language-char-sum">
+            <h3 class="js-language-name">Русский</h3>
+            <div class="form-group">
+                <input type="text" class="js-sum-length form-control" value="1 2 213 123 2">
+            </div>
+            <div class="form-group">
+                <input type="text" class="js-sum-length form-control" value="23">
+            </div>
+            <div class="form-group">
+                <textarea class="js-sum-length form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <textarea class="js-sum-length form-control"></textarea>
+            </div>
+            Всего в данной вкладке символов: <div id="js-length-container-sum" class="badge"></div>
+        </div>
+        <div id="menu1" class="tab-pane fade js-language-char-sum">
+            <h3 class="js-language-name">Английский</h3>
+            <div class="form-group">
+                <input type="text" class="js-sum-length form-control" value="">
+            </div>
+            <div class="form-group">
+                <input type="text" class="js-sum-length form-control" value="23">
+            </div>
+            <div class="form-group">
+                <textarea class="js-sum-length form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <textarea class="js-sum-length form-control"></textarea>
+            </div>
+            Всего в данной вкладке символов: <div id="js-length-container-sum" class="badge"></div>
+        </div>
+        <div id="menu2" class="tab-pane fade js-language-char-sum">
+            <h3 class="js-language-name">Немецкий</h3>
+            <div class="form-group">
+                <input type="text" class="js-sum-length form-control" value="1 2 2">
+            </div>
+            <div class="form-group">
+                <input type="text" class="js-sum-length form-control" value="23">
+            </div>
+            <div class="form-group">
+                <textarea class="js-sum-length form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <textarea class="js-sum-length form-control"></textarea>
+            </div>
+            Всего в данной вкладке символов: <div id="js-length-container-sum" class="badge"></div>
+        </div>
+    </div>
+    <br/>
+    <div class="form-group">
+        <div class="clearfix">
+            <div class="alert alert-info">
+                <span class="js-result-language"></span>
+            </div>
+        </div>
+    </div>
 </div>
-<div id="js-length-total"></div>
 </body>
 
 </html>
